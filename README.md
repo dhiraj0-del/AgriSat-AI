@@ -8,7 +8,7 @@ AI-driven crop classification, moisture stress detection, and irrigation advisor
 
 ## Dashboard Preview
 
-![Dashboard](screenshots/dashboard.png)
+![Dashboard](screenshots/Screenshot 2026-06-18 135957.png)
 
 ---
 
