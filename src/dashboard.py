@@ -353,7 +353,5 @@ Dashboard
 st.header("👨‍💻 Developer")
 
 st.write(
-    "AgriSat AI developed by Dhiraj "
-    "for Bharatiya Antariksh Hackathon "
-    "(BAH) Problem Statement 06."
+    "AgriSat AI developed by A V D DHIRAJ "
 )
