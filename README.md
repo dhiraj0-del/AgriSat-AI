@@ -1,56 +1,75 @@
-AgriSat AI 🌾🛰️
+# 🌾 AgriSat AI
 
-AI-Driven Crop Classification, Moisture Stress Detection, and Irrigation Advisory System
+### Intelligent Crop Monitoring and Irrigation Advisory System
 
-AgriSat AI is a satellite-based precision agriculture platform
+AI-driven crop classification, moisture stress detection, and irrigation advisory generation using Sentinel-1 SAR and Sentinel-2 Optical satellite data.
 
-The project integrates:
+---
 
-Sentinel-2 Optical Satellite Data
-Sentinel-1 SAR Data
-Machine Learning
-Moisture Stress Detection
-Water Deficit Estimation
-Irrigation Advisory Generation
+## Dashboard Preview
+
+![Dashboard](screenshots/dashboard.png)
+
+---
+
+## Project Overview
+
+AgriSat AI combines:
+
+- Sentinel-2 Optical Data
+- Sentinel-1 SAR Data
+- Machine Learning
+- Moisture Stress Detection
+- Water Deficit Estimation
+- Irrigation Advisory
 
 to support precision agriculture and smart farming.
 
-Features
 
-Satellite Feature Extraction
-NDVI
-NDWI
-EVI
+
+## Features
+
+### Satellite Feature Extraction
+
+- NDVI
+- NDWI
+- EVI
 
 from Sentinel-2 imagery using Google Earth Engine.
 
-SAR Analysis
-VV Polarization
-VH Polarization
+### SAR Analysis
+
+- VV Polarization
+- VH Polarization
 
 from Sentinel-1 imagery.
 
-Crop Classification
+### Crop Classification
 
 Random Forest-based crop classification pipeline.
 
-Moisture Stress Detection
+### Moisture Stress Detection
 
 Vegetation Condition Index (VCI) based stress monitoring:
 
-Healthy
-Mild Stress
-Moderate Stress
-Severe Stress
-Irrigation Advisory
+- Healthy
+- Mild Stress
+- Moderate Stress
+- Severe Stress
+
+### Irrigation Advisory
 
 Automated irrigation recommendations based on stress and water deficit analysis.
 
-Dashboard
+### Dashboard
 
 Interactive Streamlit dashboard for visualization and analysis.
 
-project structure
+---
+
+## Project Structure
+
+```text
 AGRISAT_AI/
 │
 ├── data/
@@ -74,13 +93,13 @@ AGRISAT_AI/
 ├── README.md
 └── LICENSE
 
-
 Installation
 
-git clone <repository-url>
+git clone https://github.com/dhiraj0-del/AgriSat-AI.git
 cd AGRISAT_AI
 
 pip install -r requirements.txt
+
 
 Run Dashboard
 
@@ -98,7 +117,48 @@ Scikit-Learn
 Matplotlib
 Sentinel-1
 Sentinel-2
-Future Scope
+
+
+System Architecture
+
+Sentinel-2 Optical Data
+        │
+        ▼
+ NDVI / NDWI / EVI
+        │
+        ▼
+Sentinel-1 SAR Data
+(VV, VH)
+        │
+        ▼
+ Feature Extraction
+        │
+        ▼
+ Random Forest Model
+        │
+        ▼
+ Crop Classification
+        │
+        ▼
+ Phenology Analysis
+        │
+        ▼
+ VCI Stress Detection
+        │
+        ▼
+ Water Deficit Estimation
+        │
+        ▼
+ Irrigation Advisory
+        │
+        ▼
+ Streamlit Dashboard
+
+
+
+ Future Scope
+
+
 Interactive Farmer Dashboard
 Real-Time Weather Integration
 AI Agronomist Chatbot
@@ -106,6 +166,7 @@ Yield Prediction
 Mobile Application
 
 
+
 Developer
 
-Dhiraj
+A V D Dhiraj
