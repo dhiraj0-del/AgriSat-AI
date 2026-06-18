@@ -121,38 +121,64 @@ Sentinel-2
 
 System Architecture
 
-Sentinel-2 Optical Data
-        │
-        ▼
- NDVI / NDWI / EVI
-        │
-        ▼
-Sentinel-1 SAR Data
-(VV, VH)
-        │
-        ▼
- Feature Extraction
-        │
-        ▼
- Random Forest Model
-        │
-        ▼
- Crop Classification
-        │
-        ▼
- Phenology Analysis
-        │
-        ▼
- VCI Stress Detection
-        │
-        ▼
- Water Deficit Estimation
-        │
-        ▼
- Irrigation Advisory
-        │
-        ▼
- Streamlit Dashboard
+┌──────────────────────┐
+│  Sentinel-2 Optical  │
+│       Satellite      │
+└──────────┬───────────┘
+           │
+           ▼
+┌──────────────────────┐
+│  NDVI / NDWI / EVI   │
+│ Feature Extraction   │
+└──────────┬───────────┘
+           │
+           ▼
+┌──────────────────────┐
+│ Sentinel-1 SAR Data  │
+│      VV / VH         │
+└──────────┬───────────┘
+           │
+           ▼
+┌──────────────────────┐
+│ Feature Integration  │
+└──────────┬───────────┘
+           │
+           ▼
+┌──────────────────────┐
+│ Random Forest Model  │
+└──────────┬───────────┘
+           │
+           ▼
+┌──────────────────────┐
+│ Crop Classification  │
+└──────────┬───────────┘
+           │
+           ▼
+┌──────────────────────┐
+│ Phenology Analysis   │
+└──────────┬───────────┘
+           │
+           ▼
+┌──────────────────────┐
+│ Moisture Stress      │
+│ Detection (VCI)      │
+└──────────┬───────────┘
+           │
+           ▼
+┌──────────────────────┐
+│ Water Deficit        │
+│ Estimation           │
+└──────────┬───────────┘
+           │
+           ▼
+┌──────────────────────┐
+│ Irrigation Advisory  │
+└──────────┬───────────┘
+           │
+           ▼
+┌──────────────────────┐
+│ Streamlit Dashboard  │
+└──────────────────────┘
 
 
 
