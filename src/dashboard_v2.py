@@ -7,8 +7,11 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from shapely.geometry import Polygon
 import geopandas as gpd
-
-
+from satellite import (
+    get_latest_sentinel_image_from_bbox,
+    calculate_farm_ndvi,
+    interpret_ndvi
+)
 # =========================
 # PAGE CONFIG
 # =========================
@@ -148,19 +151,12 @@ Draw(
     }
 ).add_to(m)
 
-m = folium.Map(
-    location=[farm_lat, farm_lon],
-    zoom_start=14
-)
-
-Draw(...).add_to(m)
 map_data = st_folium(
     m,
     width=None,
     height=600
 )
 if map_data and map_data.get("all_drawings"):
-
     st.success(
         "Farm boundary selected successfully."
     )
@@ -168,6 +164,39 @@ if map_data and map_data.get("all_drawings"):
     drawing = map_data["all_drawings"][0]
 
     coords = drawing["geometry"]["coordinates"][0]
+    # Save farm polygon
+
+    st.session_state["farm_polygon"] = coords
+    # =====================================
+    # BOUNDING BOX EXTRACTION
+    # =====================================
+
+    lons = [
+        point[0]
+        for point in coords
+    ]
+
+    lats = [
+        point[1]
+        for point in coords
+    ]
+
+    min_lon = min(lons)
+    max_lon = max(lons)
+
+    min_lat = min(lats)
+    max_lat = max(lats)
+
+    bbox = [
+        min_lon,
+        min_lat,
+        max_lon,
+        max_lat
+    ]
+
+    st.session_state["farm_bbox"] = bbox
+    
+    
 
     polygon_points = [
         (point[0], point[1])
@@ -344,6 +373,275 @@ st.metric(
     "💧 Estimated Water Requirement",
     f"{water_required_liters:,.0f} L"
 )
+
+# =========================
+# FARM INTELLIGENCE
+# =========================
+
+st.header("🧠 Farm Intelligence")
+
+farm_area = st.session_state.get(
+    "farm_area",
+    0
+)
+
+water_required_liters = (
+    farm_area * 50000
+)
+
+# =========================
+# HEAT STRESS RISK
+# =========================
+
+if temperature > 35:
+    heat_risk = "🔴 High"
+
+elif temperature > 30:
+    heat_risk = "🟡 Moderate"
+
+else:
+    heat_risk = "🟢 Low"
+
+# =========================
+# MOISTURE RISK
+# =========================
+
+if humidity < 40:
+    moisture_risk = "🔴 High"
+
+elif humidity < 60:
+    moisture_risk = "🟡 Moderate"
+
+else:
+    moisture_risk = "🟢 Low"
+
+# =========================
+# WIND RISK
+# =========================
+
+if wind_speed > 20:
+    wind_risk = "🔴 High"
+
+elif wind_speed > 10:
+    wind_risk = "🟡 Moderate"
+
+else:
+    wind_risk = "🟢 Low"
+
+# =========================
+# RAIN RISK
+# =========================
+
+if tomorrow_rain > 10:
+    rain_risk = "🟢 Good Rainfall"
+
+elif tomorrow_rain > 3:
+    rain_risk = "🟡 Light Rain"
+
+else:
+    rain_risk = "🔴 No Rain"
+
+# =========================
+# DISPLAY METRICS
+# =========================
+
+col1, col2, col3, col4 = st.columns(4)
+
+with col1:
+    st.metric(
+        "🌡 Heat Risk",
+        heat_risk
+    )
+
+with col2:
+    st.metric(
+        "💧 Moisture Risk",
+        moisture_risk
+    )
+
+with col3:
+    st.metric(
+        "💨 Wind Risk",
+        wind_risk
+    )
+
+with col4:
+    st.metric(
+        "🌧 Rain Status",
+        rain_risk
+    )
+
+# =========================
+# SATELLITE CONNECTION
+# =========================
+
+st.header("🛰 Satellite Intelligence")
+
+if "farm_bbox" in st.session_state:
+
+    bbox = st.session_state["farm_bbox"]
+
+    try:
+
+        item = (
+            get_latest_sentinel_image_from_bbox(
+                bbox
+            )
+        )
+
+        if item:
+
+            st.success(
+                "Sentinel-2 image found."
+            )
+
+            st.write(
+                f"Image ID: {item.id}"
+            )
+
+            with st.spinner(
+                "Calculating NDVI..."
+            ):
+
+                farm_polygon = (
+                    st.session_state[
+                        "farm_polygon"
+                    ]
+                )
+
+                ndvi = calculate_farm_ndvi(
+                    item,
+                    farm_polygon
+                )
+
+                health = interpret_ndvi(
+                    ndvi
+                )
+
+                col1, col2 = st.columns(2)
+
+                with col1:
+                    st.metric(
+                        "🌿 NDVI",
+                        f"{ndvi:.3f}"
+                    )
+
+                with col2:
+                    st.metric(
+                        "🌾 Crop Health",
+                        health
+                    )
+
+        else:
+
+            st.warning(
+                "No Sentinel image found."
+            )
+
+    except Exception as e:
+
+        st.error(
+            f"Satellite Error: {e}"
+        )
+
+# =========================
+# FARM STATISTICS
+# =========================
+
+st.subheader("📊 Farm Statistics")
+
+col1, col2 = st.columns(2)
+
+with col1:
+    st.metric(
+        "🌾 Farm Area",
+        f"{farm_area:.2f} ha"
+    )
+
+with col2:
+    st.metric(
+        "🚰 Water Requirement",
+        f"{water_required_liters:,.0f} L"
+    )
+
+# =========================
+# OVERALL RISK SCORE
+# =========================
+
+risk_score = 0
+
+if temperature > 35:
+    risk_score += 1
+
+if humidity < 40:
+    risk_score += 1
+
+if wind_speed > 20:
+    risk_score += 1
+
+if tomorrow_rain < 3:
+    risk_score += 1
+
+if risk_score >= 3:
+    overall_risk = "🔴 High"
+
+elif risk_score >= 2:
+    overall_risk = "🟡 Moderate"
+
+else:
+    overall_risk = "🟢 Low"
+
+st.subheader("⚠ Overall Farm Risk")
+
+st.metric(
+    "Risk Level",
+    overall_risk
+)
+
+# =========================
+# SMART RECOMMENDATION
+# =========================
+
+st.subheader("🚜 Smart Recommendation")
+
+if overall_risk == "🔴 High":
+
+    st.error(
+        """
+        High environmental stress detected.
+
+        Recommendation:
+        • Irrigate within 24 hours
+        • Monitor crop health daily
+        • Avoid fertilizer application during heat stress
+        """
+    )
+
+elif overall_risk == "🟡 Moderate":
+
+    st.warning(
+        """
+        Moderate risk detected.
+
+        Recommendation:
+        • Monitor soil moisture
+        • Irrigate within 2-3 days if rainfall does not occur
+        """
+    )
+
+else:
+
+    st.success(
+        """
+        Farm conditions are healthy.
+
+        Recommendation:
+        • No immediate irrigation required
+        • Continue routine monitoring
+        """
+    )
+    
+    
 # =========================
 # PROJECT OVERVIEW
 # =========================
